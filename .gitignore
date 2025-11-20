@@ -36,5 +36,10 @@ ENV/
 .DS_Store
 Thumbs.db
 
-# Model cache
-# (model files are tracked with Git LFS)
+# Model cache and GGUF files (too large for GitHub)
+models/
+*.safetensors
+*.bin
+*.pt
+*.pth
+*.gguf
