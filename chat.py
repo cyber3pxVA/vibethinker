@@ -1,9 +1,11 @@
 from transformers import AutoModelForCausalLM, AutoTokenizer, GenerationConfig
+import os
 
 
 class VibeThinker:
     def __init__(self, model_path):
         self.model_path = model_path
+        print(f"Loading model from {model_path} on CPU...")
         self.model = AutoModelForCausalLM.from_pretrained(
             self.model_path,
             low_cpu_mem_usage=True,
@@ -11,6 +13,7 @@ class VibeThinker:
             device_map="cpu"
         )
         self.tokenizer = AutoTokenizer.from_pretrained(self.model_path, trust_remote_code=True)
+        print("Model loaded successfully on CPU!\n")
 
     def infer_text(self, prompt):
         messages = [
@@ -26,9 +29,9 @@ class VibeThinker:
         generation_config = dict(
             max_new_tokens=40960,
             do_sample=True,
-            temperature=0.6,  # 0.6 or 1.0, you can set it according to your needs
+            temperature=0.6,
             top_p=0.95,
-            top_k=None  # in vLLM or SGlang, please set top_k to -1, it means skip top_k for sampling
+            top_k=None
         )
         generated_ids = self.model.generate(
             **model_inputs,
@@ -44,18 +47,33 @@ class VibeThinker:
 
 
 if __name__ == '__main__':
-    # Initialize the model with the local model path
-    # If models/ directory doesn't exist, it will fall back to downloading from Hugging Face
-    import os
-    model_path = './models' if os.path.exists('./models') else 'WeiboAI/VibeThinker-1.5B'
-    model = VibeThinker(model_path)
+    # Initialize the model from Hugging Face
+    model = VibeThinker('WeiboAI/VibeThinker-1.5B')
     
-    # Example prompt - works best with competitive-style math and coding problems
-    prompt = '''Solve this math problem step by step:
+    print("=" * 60)
+    print("VibeThinker-1.5B Interactive Chat")
+    print("=" * 60)
+    print("Best for: Math problems and coding challenges")
+    print("Type 'exit' or 'quit' to end the chat\n")
     
-If f(x) = 2x^2 + 3x - 5, what is f(4)?'''
-    
-    print("Running VibeThinker-1.5B...")
-    print(f"\nPrompt: {prompt}\n")
-    print("Response:")
-    print(model.infer_text(prompt))
+    while True:
+        try:
+            user_input = input("\nYou: ").strip()
+            
+            if user_input.lower() in ['exit', 'quit', 'q']:
+                print("\nGoodbye!")
+                break
+                
+            if not user_input:
+                continue
+            
+            print("\nVibeThinker: ", end="", flush=True)
+            response = model.infer_text(user_input)
+            print(response)
+            
+        except KeyboardInterrupt:
+            print("\n\nGoodbye!")
+            break
+        except Exception as e:
+            print(f"\nError: {e}")
+            continue
