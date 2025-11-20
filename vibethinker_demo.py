@@ -44,8 +44,11 @@ class VibeThinker:
 
 
 if __name__ == '__main__':
-    # Initialize the model with the Hugging Face model path
-    model = VibeThinker('WeiboAI/VibeThinker-1.5B')
+    # Initialize the model with the local model path
+    # If models/ directory doesn't exist, it will fall back to downloading from Hugging Face
+    import os
+    model_path = './models' if os.path.exists('./models') else 'WeiboAI/VibeThinker-1.5B'
+    model = VibeThinker(model_path)
     
     # Example prompt - works best with competitive-style math and coding problems
     prompt = '''Solve this math problem step by step:

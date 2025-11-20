@@ -36,9 +36,5 @@ ENV/
 .DS_Store
 Thumbs.db
 
-# Model cache (don't upload model files)
-models/
-*.safetensors
-*.bin
-*.pt
-*.pth
+# Model cache
+# (model files are tracked with Git LFS)
